@@ -1,0 +1,23 @@
+{
+    "perl" : "6.c",
+    "name" : "Finance::GDAX::API",
+    "license" : "Artistic-2.0",
+    "version" : "0.0.1",
+    "description" : "GDAX Cyrptocurrency Exchange low-level API implementation.",
+    "authors" : [ "Mark Rushing" ],
+    "provides" : {
+	"Finance::GDAX::API::Product" : "lib/Finance/GDAX/API/Product.pm6",
+	"Finance::GDAX::API::Time"    : "lib/Finance/GDAX/API/Time.pm6",
+    },
+    "depends" : [ "JSON::Fast",
+		  "LibCurl",
+		  "Digest::HMAC",
+		  "Digest::SHA",
+		  "MIME::Base64",
+		],
+    "test-depends" : [ "Test",
+		       "File::Temp",
+		     ],
+    "resources" : [ ],
+    "source-url" : "git://github.com/adaptiveoptics/P6-Finance-GDAX-API.git"
+}
