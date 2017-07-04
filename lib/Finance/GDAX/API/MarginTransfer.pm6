@@ -1,48 +1,27 @@
-package Finance::GDAX::API::MarginTransfer;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API::TypeConstraints;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
+class Finance::GDAX::API::MarginTransfer does Finance::GDAX::API
+{
+    has                    $.margin-profile-id is rw is required;
+    has MarginTransferType $.type              is rw is required;
+    has PositiveNum        $.amount            is rw is required;
+    has                    $.currency          is rw is required;
 
-has 'margin_profile_id' => (is  => 'rw',
-			    isa => 'Str',
-    );
-has 'type' => (is  => 'rw',
-	       isa => 'MarginTransferType',
-    );
-has 'amount' => (is  => 'rw',
-		 isa => 'PositiveNum',
-    );
-has 'currency' => (is  => 'rw',
-		   isa => 'Str',
-    );
+    method initiate {	
+	$.path   = 'profiles/margin-transfer';
+	$.method = 'POST';
+	$.body   = { amount            => $.amount,
+		     currency          => $.currency,
+		     type              => $.type,
+		     margin_profile_id => $.margin_profile_id };
 
-sub initiate {
-    my $self = shift;
-    unless ($self->margin_profile_id &&
-	    $self->type &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'Margin transfers need all attributes set';
+	return self.send;
     }
-    $self->path('/profiles/margin-transfer');
-    $self->method('POST');
-    $self->body({ amount            => $self->amount,
-		  currency          => $self->currency,
-		  type              => $self->type,
-		  margin_profile_id => $self->margin_profile_id,
-		});
-    return $self->send;
 }
 
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::MarginTransfer - Transfer funds between margin and
@@ -145,3 +124,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
