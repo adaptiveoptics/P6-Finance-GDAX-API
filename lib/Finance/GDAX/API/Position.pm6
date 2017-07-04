@@ -1,37 +1,27 @@
-package Finance::GDAX::API::Position;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
+class Finance::GDAX::API::Position does Finance::GDAX::API
+{
+    has Bool $.repay-only is rw;
 
-has 'repay_only' => (is  => 'rw',
-		     isa => 'Bool',
-    );
-
-sub get {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/position');
-    return $self->send;
-}
-
-sub close {
-    my $self = shift;
-    $self->method('POST');
-    $self->path('/position/close');
-    if (defined $self->repay_only) {
-	my $r = $self->repay_only ? 'true' : 'false';
-	$self->body({ repay_only => $r });
+    method get() {
+	$.method = 'GET';
+	$.path   = 'position';
+	return self.send;
     }
-    return $self->send;
-}
-__PACKAGE__->meta->make_immutable;
-1;
 
+    method close() {
+	$.method = 'POST';
+	$.path   = 'position/close';
+	if $.repay_only.defined {
+	    $.body = { repay_only => $.repay-only };
+	}
+	return self.send;
+    }
+}
+
+#|{
 =head1 NAME
 
 Finance::GDAX::API::Position - Overview of profile
@@ -202,3 +192,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
