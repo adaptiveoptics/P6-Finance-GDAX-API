@@ -1,62 +1,38 @@
-package Finance::GDAX::API::Deposit;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API::TypeConstraints;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
+class Finance::GDAX::API::Deposit does Finance::GDAX::API
+{
+    has             $.payment-method-id   is rw;
+    has             $.coinbase-account-id is rw;
+    has PositiveNum $.amount              is rw is required;
+    has             $.currency            is rw is required;;
 
-has 'payment_method_id' => (is  => 'rw',
-			    isa => 'Str',
-    );
-has 'coinbase_account_id' => (is  => 'rw',
-			      isa => 'Str',
-    );
-has 'amount' => (is  => 'rw',
-		 isa => 'PositiveNum',
-    );
-has 'currency' => (is  => 'rw',
-		   isa => 'Str',
-    );
-
-sub from_payment {
-    my $self = shift;
-    unless ($self->payment_method_id &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'payments need amount and currency set';
+    method from-payment() {
+	fail 'payments need a payment id set' unless $.payment-method-id;
+	$.path   = 'deposits/payment-method';
+	$.method = 'POST';
+	$.body   = { amount            => $.amount,
+		     currency          => $.currency,
+		     payment_method_id => $.payment-method-id };
+    
+	return self.send;
     }
-    $self->path('/deposits/payment-method');
-    $self->method('POST');
-    $self->body({ amount            => $self->amount,
-		  currency          => $self->currency,
-		  payment_method_id => $self->payment_method_id,
-		});
-    return $self->send;
+
+    method from-coinbase() {
+	fail 'coinbase deposit requires a coinbase account id' unless $.coinbase-account-id;
+	$.path   = 'deposits/coinbase-account';
+	$.method = 'POST';
+	$.body   = { amount              => $.amount,
+		     currency            => $.currency,
+		     coinbase_account_id => $.coinbase-account-id };
+
+    return self.send;
+    }
 }
 
-sub from_coinbase {
-    my $self = shift;
-    unless ($self->coinbase_account_id &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'coinbase needs an amount and currency set';
-    }
-    $self->path('/deposits/coinbase-account');
-    $self->method('POST');
-    $self->body({ amount              => $self->amount,
-		  currency            => $self->currency,
-		  coinbase_account_id => $self->coinbase_account_id,
-		});
-    return $self->send;
-}
-
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::Deposit - Deposit funds via Payment Method or
@@ -155,3 +131,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
