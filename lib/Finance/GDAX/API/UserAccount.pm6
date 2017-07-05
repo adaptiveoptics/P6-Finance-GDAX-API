@@ -1,23 +1,16 @@
-package Finance::GDAX::API::UserAccount;
-our $VERSION = '0.02';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
-
-sub trailing_volume {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/users/self/trailing-volume');
-    return $self->send;
+class Finance::GDAX::API::UserAccount does Finance::GDAX::API
+{
+    method trailing-volume() {
+	$.method = 'GET';
+	$.path   = 'users/self/trailing-volume';
+	return self.send;
+    }
 }
 
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::UserAccount - Account Info
@@ -76,3 +69,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
