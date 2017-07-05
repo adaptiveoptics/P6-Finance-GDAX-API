@@ -4,7 +4,7 @@ use Finance::GDAX::API::TypeConstraints;
 
 class Finance::GDAX::API::Product does Finance::GDAX::API
 {
-    has Str $.id is rw;
+    has $.product-id is rw;
     
     # for order_book
     has ProductLevel $.level is rw = 1;
@@ -14,76 +14,59 @@ class Finance::GDAX::API::Product does Finance::GDAX::API
     has DateTime    $.end         is rw;
     has PositiveInt $.granularity is rw;
 
-    sub list {
-	$.method('GET');
-	$.path('products');
+    method list {
+	$.method = 'GET';
+	$.path   = 'products';
 	return self.send;
     }
 
-    sub order_book($product-id?) {
-	$product-id = $product-id || $.id;
-	die 'order_book requires a product id' unless $product-id;
-	$.id = $product-id;
-	my $.path = "products";
-	self.add-to-url("$product_id?level=" ~ $.level);
-	$.method('GET');
+    method order-book(:$!product-id = $!product-id) {
+	die 'order_book requires a product id' unless $.product-id;
+	$.path = 'products';
+	self.add-to-url($.product-id ~ "?level=" ~ $.level);
+	$.method = 'GET';
 	return self.send;
     }
 
-    sub ticker {
-	my ($self, $product_id) = @_;
-	$product_id = $product_id || $self->id;
-	die 'ticker requires a product id' unless $product_id;
-	$self->id($product_id);
-	my $path = "/products/$product_id/ticker";
-	$self->method('GET');
-	$self->path($path);
-	return $self->send;
+    method ticker(:$!product-id = $!product-id) {
+	die 'ticker requires a product id' unless $.product-id;
+	$.method = 'GET';
+	$.path   = "products/" ~ $.product-id ~ "/ticker";
+	return self.send;
     }
 
-    sub trades {
-	my ($self, $product_id) = @_;
-	$product_id = $product_id || $self->id;
-	die 'trades requires a product id' unless $product_id;
-	$self->id($product_id);
-	my $path = "/products/$product_id/trades";
-	$self->method('GET');
-	$self->path($path);
-	return $self->send;
+    method trades(:$!product-id = $!product-id) {
+	die 'trades requires a product id' unless $.product-id;
+	$.method = 'GET';
+	$.path   = "products/" ~ $.product-id ~ "/trades";
+	return self.send;
     }
 
-    sub historic_rates {
-	my ($self, $product_id) = @_;
-	$product_id = $product_id || $self->id;
-	die 'historic rates requires a product id' unless $product_id;
-	$self->id($product_id);
-	die 'historic rates requires start time'  unless $self->start;
-	die 'historic rates requires end time'    unless $self->end;
-	die 'historic rates requires granularity' unless $self->granularity;
+    method historic-rates(:$!product-id = $!product-id) {
+	die 'historic rates requires a product id' unless $.product-id;
+	die 'historic rates requires start time'   unless $.start;
+	die 'historic rates requires end time'     unless $.end;
+	die 'historic rates requires granularity'  unless $.granularity;
 	
-	my $path = "/products/$product_id/candles";
-	$path .= '?start='       . $self->start;
-	$path .= '&end='         . $self->end;
-	$path .= '&granularity=' . $self->granularity;
-	$self->method('GET');
-	$self->path($path);
-	return $self->send;
+	$.path  = "products/" ~ $.product-id ~ "/candles";
+	$.path ~= '?start='       ~ $.start;
+	$.path ~= '&end='         ~ $.end;
+	$.path ~= '&granularity=' ~ $.granularity;
+	$.method = 'GET';
+	return self.send;
     }
 
-    sub day_stats {
-	my ($self, $product_id) = @_;
-	$product_id = $product_id || $self->id;
-	die 'day_stats requires a product id' unless $product_id;
-	$self->id($product_id);
-	my $path = "/products/$product_id/stats";
-	$self->method('GET');
-	$self->path($path);
-	return $self->send;
+    method day-stats(:$!product-id = $!product-id) {
+	die 'day_stats requires a product id' unless $.product-id;
+	$.method = 'GET';
+	$.path   = "products";
+	self.add-to-url($.product-id);
+	self.add-to-url('stats');
+	return self.send;
+    }
 }
-}
-__PACKAGE__->meta->make_immutable;
-1;
 
+#|{
 =head1 NAME
 
 Finance::GDAX::API::UserAccount - Product Information
@@ -336,3 +319,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
