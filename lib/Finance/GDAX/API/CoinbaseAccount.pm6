@@ -1,23 +1,16 @@
-package Finance::GDAX::API::CoinbaseAccount;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
-
-sub get {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/coinbase-accounts');
-    return $self->send;
+class Finance::GDAX::API::CoinbaseAccount does Finance::GDAX::API
+{
+    method get() {
+	$.method = 'GET';
+	$.path   = 'coinbase-accounts';
+	return self.send;
+    }
 }
 
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::CoinbaseAccount - List Coinbase Accounts
@@ -121,3 +114,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}

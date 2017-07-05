@@ -1,81 +1,50 @@
-package Finance::GDAX::API::Withdrawl;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API::TypeConstraints;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
+class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
+{
+    has             $.payment-method-id   is rw;
+    has             $.coinbase-account-id is rw;
+    has             $.crypto-address      is rw;
+    has PositiveNum $.amount              is rw is required;
+    has             $.currency            is rw is required;
 
-has 'payment_method_id' => (is  => 'rw',
-			    isa => 'Str',
-    );
-has 'coinbase_account_id' => (is  => 'rw',
-			      isa => 'Str',
-    );
-has 'crypto_address' => (is  => 'rw',
-			 isa => 'Str',
-    );
-has 'amount' => (is  => 'rw',
-		 isa => 'PositiveNum',
-    );
-has 'currency' => (is  => 'rw',
-		   isa => 'Str',
-    );
-
-sub to_payment {
-    my $self = shift;
-    unless ($self->payment_method_id &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'payments need amount and currency set';
+    method to-payment(:$!payment-method-id) {
+	fail 'withdrawl to payments requires a payment-method-id' unless $.payment-method-id;
+	$.path   = 'withdrawls/payment-method';
+	$.method = 'POST';
+	$.body   = { amount            => $.amount,
+		     currency          => $.currency,
+		     payment_method_id => $.payment-method-id };
+	
+	return self.send;
     }
-    $self->path('/withdrawls/payment-method');
-    $self->method('POST');
-    $self->body({ amount            => $self->amount,
-		  currency          => $self->currency,
-		  payment_method_id => $self->payment_method_id,
-		});
-    return $self->send;
+
+    method to-coinbase(:$!coinbase-account-id) {
+	fail 'withdrawl to coinbase requires coinbase-account-id' unless $.coinbase-account-id;
+	$.path   = 'withdrawls/coinbase-account';
+	$.method = 'POST';
+	$.body   = { amount              => $.amount,
+		     currency            => $.currency,
+		     coinbase_account_id => $.coinbase-account-id };
+
+	return self.send;
+    }
+
+    method to-crypto(:$!crypto-address) {
+	fail 'withdrawl to crypto requires crypto-address' unless $.crypto-address;
+	$.path   = 'withdrawls/crypto';
+	$.method = 'POST';
+	$.body   = { amount         => $.amount,
+		     currency       => $.currency,
+		     crypto_address => $.crypto-address };
+	
+	return self.send;
+    }
 }
 
-sub to_coinbase {
-    my $self = shift;
-    unless ($self->coinbase_account_id &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'coinbase needs an amount and currency set';
-    }
-    $self->path('/withdrawls/coinbase-account');
-    $self->method('POST');
-    $self->body({ amount              => $self->amount,
-		  currency            => $self->currency,
-		  coinbase_account_id => $self->coinbase_account_id,
-		});
-    return $self->send;
-}
-
-sub to_crypto {
-    my $self = shift;
-    unless ($self->crypto_address &&
-	    $self->amount &&
-	    $self->currency) {
-	die 'crypto_address needs an amount and currency set';
-    }
-    $self->path('/withdrawls/crypto');
-    $self->method('POST');
-    $self->body({ amount         => $self->amount,
-		  currency       => $self->currency,
-		  crypto_address => $self->coinbase_account_id,
-		});
-    return $self->send;
-}
-
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::Withdrawl - Withdraw funds to a Payment Method or
@@ -193,3 +162,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}

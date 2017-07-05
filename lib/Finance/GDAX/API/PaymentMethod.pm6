@@ -1,23 +1,16 @@
-package Finance::GDAX::API::PaymentMethod;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
-
-sub get {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/payment-methods');
-    return $self->send;
+class Finance::GDAX::API::PaymentMethod does Finance::GDAX::API
+{
+    method get() {
+	$.method = 'GET';
+	$.path   = 'payment-methods';
+	return self.send;
+    }
 }
 
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::PaymentMethod - List Payment Methods
@@ -128,3 +121,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
