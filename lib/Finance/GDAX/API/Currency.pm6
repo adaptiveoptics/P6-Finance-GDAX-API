@@ -1,23 +1,16 @@
-package Finance::GDAX::API::Currency;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
-
-sub list {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/currencies');
-    return $self->send;
+class Finance::GDAX::API::Currency does Finance::GDAX::API
+{
+    method list() {
+	$.method = 'GET';
+	$.path   = 'currencies';
+	return self.send;
+    }
 }
 
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::Currency - Currencies
@@ -75,3 +68,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
