@@ -1,81 +1,52 @@
-package Finance::GDAX::API::Report;
-our $VERSION = '0.01';
-use 5.20.0;
-use warnings;
-use Moose;
+use v6;
 use Finance::GDAX::API::TypeConstraints;
 use Finance::GDAX::API;
-use namespace::autoclean;
 
-extends 'Finance::GDAX::API';
+class Finance::GDAX::API::Report does Finance::GDAX::API
+{
+    has ReportType   $.type       is rw;
+    has              $.start-date is rw;
+    has              $.end-date   is rw;
+    has              $.product-id is rw;
+    has              $.account-id is rw;
+    has ReportFormat $.format     is rw = 'pdf';
+    has              $.email      is rw;
 
-has 'type' => (is  => 'rw',
-	       isa => 'ReportType',
-    );
-has 'start_date' => (is  => 'rw',
-		     isa => 'Str',
-    );
-has 'end_date' => (is  => 'rw',
-		   isa => 'Str',
-    );
-has 'product_id' => (is  => 'rw',
-		     isa => 'Str',
-    );
-has 'account_id' => (is  => 'rw',
-		     isa => 'Str',
-    );
-has 'format' => (is  => 'rw',
-		 isa => 'ReportFormat',
-		 default => 'pdf',
-    );
-has 'email' => (is  => 'rw',
-		isa => 'Str',
-    );
+    # For checking with "get" method
+    has $.report-id is rw;
 
-# For checking with "get" method
-has 'report_id' => (is  => 'rw',
-		    isa => 'Str',
-    );
+    method get(:$!report-id = $!report-id) {
+	fail 'get report requires a report-id' unless $.report-id;
+	$.path   = 'reports/$report_id';
+	$.method = 'GET';
+	return self.send;
+    }
 
-sub get {
-    my ($self, $report_id) = @_;
-    $report_id = $report_id || $self->report_id;
-    die 'no report_id specified to get' unless $report_id;
-    $self->report_id($report_id);
-    my $path = "/reports/$report_id";
-    warn $path;
-    $self->path($path);
-    $self->method('GET');
-    return $self->send;
+    method create() {
+	fail 'report type is required'       unless $.type;
+	fail 'report start date is required' unless $.start-date;
+	fail 'report end date is required'   unless $.end-date;
+	my %body = ( type       => $.type,
+		     start_date => $.start-date,
+		     end_date   => $.end-date,
+		     format     => $.format );
+	if ($.type eq 'fills') {
+	    fail 'product-id is required for fills report' unless $.product-id;
+            %body<product_id> = $.product-id;
+	}
+	if ($.type eq 'account') {
+	    fail 'account-id is required for account report' unless $.account-id;
+            %body<account_id> = $.account-id;
+	}
+	%body<email> = $.email if $.email;
+	$.method = 'POST';
+	$.body   = %body;
+	$.path   = 'reports';
+	return self.send;
+    }
 }
 
-sub create {
-    my $self = shift;
-    die 'report type is required' unless $self->type;
-    die 'report start date is required' unless $self->start_date;
-    die 'report end date is required' unless $self->end_date;
-    my %body = ( type       => $self->type,
-		 start_date => $self->start_date,
-		 end_date   => $self->end_date,
-		 format     => $self->format );
-    if ($self->type eq 'fills') {
-	die 'product_id is required for fills report' unless $self->product_id;
-        $body{product_id} = $self->product_id;
-    }
-    if ($self->type eq 'account') {
-	die 'account_id is required for account report' unless $self->account_id;
-        $body{account_id} = $self->account_id;
-    }
-    $body{email} = $self->email if $self->email;
-    $self->method('POST');
-    $self->body(\%body);
-    $self->path('/reports');
-    return $self->send;
-}
-
-__PACKAGE__->meta->make_immutable;
-1;
-
+#|{
 =head1 NAME
 
 Finance::GDAX::API::Report - Generate GDAX Reports
@@ -233,3 +204,4 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
+}
