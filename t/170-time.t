@@ -14,12 +14,13 @@ use Finance::GDAX::API::Time;
 ok (my $time = Finance::GDAX::API::Time.new), 'instatiated';
 
 can-ok($time, 'get');
-    
-$time.debug = True; # Make sure this is set to 1 or you'll use live data
 
-ok (my $result = $time.get), 'can get current time';
-is $result.WHAT, (Hash), 'get returns hash';
-ok $result<iso>,   'ISO time key defined';
-ok $result<epoch>, 'epoch time defined';
+if $do-online-tests {
+    $time.debug = True; # Make sure this is set to 1 or you'll use live data
 
+    ok (my $result = $time.get), 'can get current time';
+    is $result.WHAT, (Hash), 'get returns hash';
+    ok $result<iso>,   'ISO time key defined';
+    ok $result<epoch>, 'epoch time defined';
+}
 done-testing;

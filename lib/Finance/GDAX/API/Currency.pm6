@@ -10,19 +10,22 @@ class Finance::GDAX::API::Currency does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Currency - Currencies
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Currency;
 
-  $currency = Finance::GDAX::API::Currency->new;
+  $currency = Finance::GDAX::API::Currency.new;
 
   # List all currencies
-  $currencies = $currency->list;
+  @currencies = $currency.list;
+  =end code
 
 =head2 DESCRIPTION
 
@@ -30,7 +33,7 @@ Work with GDAX currencies.
 
 =head1 METHODS
 
-=head2 C<list>
+=head2 list
 
 From the GDAX API:
 
@@ -52,9 +55,6 @@ may use a custom code.
     "min_size": "0.01000000"
   }]
 
-=cut
-
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -66,6 +66,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

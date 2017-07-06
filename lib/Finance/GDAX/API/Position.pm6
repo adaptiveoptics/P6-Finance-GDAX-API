@@ -21,19 +21,22 @@ class Finance::GDAX::API::Position does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Position - Overview of profile
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Position;
 
-  $overview = Finance::GDAX::API::Position->new;
+  $overview = Finance::GDAX::API::Position.new;
 
   # Hash of profile positions
-  $positions = $overview->get;
+  %positions = $overview.get;
+  =end code
 
 =head2 DESCRIPTION
 
@@ -47,7 +50,7 @@ danger.
 
 =head1 ATTRIBUTES
 
-=head2 C<repay_only> $boolean
+=head2 repay-only Bool
 
 This attribute is associated with the "close" method and is
 boolean. The GDAX API docs do not say what it does or means, nor if it
@@ -55,7 +58,7 @@ is required.
 
 =head1 METHODS
 
-=head2 C<get>
+=head2 get
 
 Returns a hash representing an overview of the position/account
 information.
@@ -170,14 +173,11 @@ have a resting margin call.
 
 =back
 
-=head2 C<close>
+=head2 close
 
 The GDAX API docs do not currently say what this method does. But it
 does have an either optional or required attribute that can be set,
-"repay_only".
-
-=cut
-
+"repay-only".
 
 =head1 AUTHOR
 
@@ -190,6 +190,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

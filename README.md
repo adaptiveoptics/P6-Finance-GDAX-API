@@ -1,116 +1,15 @@
-use v6;
-use Finance::GDAX::API::URL;
-use JSON::Fast;
-use LibCurl::Easy;
-use Digest::HMAC;
-use Digest::SHA;
-use MIME::Base64;
-
-role Finance::GDAX::API does Finance::GDAX::API::URL
-{
-    has      $.key         is rw = %*ENV<GDAX_API_KEY>;
-    has      $.secret      is rw = %*ENV<GDAX_API_SECRET>;
-    has      $.passphrase  is rw = %*ENV<GDAX_API_PASSPHRASE>;
-    has Bool $.signed      is rw = True;
-    has      $.method      is rw = 'POST';
-    has      $.body        is rw;
-    has UInt $.timestamp   is rw = time;
-    has UInt $.timeout     is rw = 180;
-    has      $.error;
-
-    has UInt $.response-code;
-    has      @!valid-attributes = <key secret passphrase>;
-    has      $!useragent        = 'LibCurl-Perl6';
-
-    method save-secrets-to-environment {
-	%*ENV<GDAX_API_KEY>        = $.key;
-	%*ENV<GDAX_API_SECRET>     = $.secret;
-	%*ENV<GDAX_API_PASSPHRASE> = $.passphrase;
-    }
-
-    method body-json {
-	return to-json $.body, :!pretty;
-    }
-
-    method from_json($json) {
-	return from-json $json;
-    }
-
-    method signature {
-	my $data = $.timestamp ~ $.method ~ self.get-uri;
-	$data ~= self.body-json if $.body;
-	return MIME::Base64.encode(hmac(MIME::Base64.decode($.secret), $data, &sha256));
-    }
-
-    method send {
-	my $client = LibCurl::Easy.new;
-	$client.set-header(CB-ACCESS-KEY        => $.key,
-			   CB-ACCESS-SIGN       => self.signature,
-			   CB-ACCESS-TIMESTAMP  => $.timestamp,
-			   CB-ACCESS-PASSPHRASE => $.passphrase,
-			   Content-Type         => 'application/json',
-			  ) if $.signed;
-
-	$client.setopt(timeout   => $.timeout,
-		       useragent => $!useragent,
-		      );
-	$!error = '';
-
-	given $.method {
-	    when 'GET'    {$client.setopt(URL => self.get-url)}
-	    when 'DELETE' {$client.setopt(URL           => self.get-url,
-					  customrequest => 'DELETE')}
-	    when 'POST'   {$client.setopt(URL        => self.get-url,
-					  postfields => self.body-json)}
-	    when 'PUT'    {$client.setopt(URL  => self.get-url,
-					  send => self.body-json)}
-	    default       {fail 'Method must be GET, POST, PUT or DELETE'}
-	}
-	note 'URL: ' ~ self.get-url if $.big-debug;
-	$client.perform;
-	my $content = from-json($client.content);
-	$!response-code = $client.response-code;
-	if ($!response-code >= 400) {
-	    $!error = $content<message> || 'no error message returned';
-	}
-	return $content;
-    }
-
-    method external_secret( Str :$filename!, Bool :$fork = False) {
-	my @input;
-	if ($fork) {
-	    @input = qqx/$filename/.lines;
-	} else {
-	    @input = $filename.IO.lines;
-	}
-	for @input -> $line {
-	    next if $line ~~ /^\#/;
-	    my ($k, $v) = $line.split: ':';
-	    next unless $v;
-	    unless $k eq any @!valid-attributes {
-		fail "Bad attribute found in $filename ($k)";
-	    }
-	    self."$k"() = $v;
-	}
-	return True;
-    }
-}
-
-
-=begin pod
-
-=head1 NAME
+#NAME
 
 Finance::GDAX::API - Build and sign GDAX REST request (Role)
 
-=head1 SYNOPSIS
+# SYNOPSIS
 
 This is a role and should not be punted into existence except for
 testing. But the methods and attributes are a applied to all
 Finance::GDAX::API::* classes, except for Finance::GDAX::API::URL,
 (and ::Types) which this role does.
 
-  =begin code :skip-test
+```perl
   $req = Finance::GDAX::API.new(
       key        => 'My API Key',
       secret     => 'My API Secret Key',
@@ -134,10 +33,10 @@ Finance::GDAX::API::* classes, except for Finance::GDAX::API::URL,
 
   $order = Finance::GDAX::API::Order.new;
   $orders = $order.list( status     => ['open','settled'],
-			 product-id => 'BTC-USD' );
-  =end code
+                         product-id => 'BTC-USD' );
+```
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 Creates a signed GDAX REST request - you need to provide the key,
 secret and passphrase attributes, or specify that they be provided by
@@ -154,78 +53,78 @@ hashes, hashes of arrays and all are documented within each method.
 
 All REST requests use https requests.
 
-=head1 ATTRIBUTES
+# ATTRIBUTES
 
-=head2 debug (default: True)
+## debug (default: True)
 
 Use debug mode (sandbox) or prouduction. By default requests are done
 with debug mode enabled which means connections will be made to the
 sandbox API. To do live data, you must set debug to False.
 
-=head2 key
+## key
 
 The GDAX API key. This defaults to the environment variable
 %*ENV<GDAX_API_KEY>
 
-=head2 secret
+## secret
 
 The GDAX API secret key. This defaults to the environment variable
 %*ENV<GDAX_API_SECRET>
 
-=head2 passphrase
+## passphrase
 
 The GDAX API passphrase. This defaults to the environment variable
 %*ENV<GDAX_API_PASSPHRASE>
 
-=head2 signed (default: True)
+## signed (default: True)
 
 Whether or not to cryptographically sign the REST request, which is
 required for all private endpoints. Boolean.
 
-=head2 error
+## error
 
 Returns the text of an error message if there were any in the request
 after calling the "send" method.
 
-=head2 response_code
+## response_code
 
 Returns the numeric HTTP status code of the request after "send".
 
-=head2 method (default: PUT)
+## method (default: PUT)
 
 REST method to use when data is submitted. Must be in
 upper-case. (POST, PUT, DELETE and GET currently supported).
 
-=head2 path (default: '/')
+## path (default: '/')
 
 The base URI path for the REST method, which must be set or errors will
 result for anything other than "/". Do not use leading '/'.
 
-=head2 body [array|hash]
+## body [array|hash]
 
 An array or hash that will be JSONified and represents the data being
 sent in the REST request body. This is optional.
 
-=head2 timestamp (default: current unix epoch)
+## timestamp (default: current unix epoch)
 
 An integer representing the Unix epoch of the request. This defaults
 to the current epoch time and will remain so as long as this object
 exists.
 
-=head2 timeout (default: 180)
+## timeout (default: 180)
 
 Integer time in seconds to wait for response to request.
 
-=head1 METHODS
+# METHODS
 
-=head2 send
+## send
 
 Sends the GDAX API request, returning the JSON response content as a
 perl data structure. Each Finance::GDAX::API::* class documents this
 structure (what to expect), as does the GDAX API (which will always be
 authoritative).
 
-=head2 external_secret (Str :filename, Bool :fork?)
+## external_secret (Str :filename, Bool :fork?)
 
 If you want to avoid hard-coding secrets into your code, this
 convenience method may be able to help.
@@ -247,9 +146,11 @@ credentials, you can create a small callable program that will decrypt
 them and provide them, so that they never live on disk unencrypted,
 and never show up in process listings:
 
+```perl
   my $request = Finance::GDAX::API.new;
   $request.external_secret(filename => '/path/to/my_decryptor --decrypt myfile.aes',
-                	   fork     => True);
+                           fork     => True);
+```
 
 This would assign the key, secret and passphrase attributes for you by
 forking and running the 'my_decryptor' program. The "fork" boolean
@@ -258,7 +159,7 @@ filename.
 
 This method will die easily if things aren't right.
 
-=head2 save_secrets_to_environment
+## save_secrets_to_environment
 
 Another convenience method that can be used to store your secrets into
 the volatile environment in which your perl is running, so that
@@ -269,14 +170,14 @@ You may not want to do this! It stores each attribute, "key", "secret"
 and "passphrase" to the environment variables "GDAX_API_KEY",
 "GDAX_API_SECRET" and "GDAX_API_PASSPHRASE", respectively.
 
-=head1 METHODS you probably don't need to worry about
+# METHODS you probably don't need to worry about
 
-=head2 signature
+## signature
 
 Returns a string, base64-encoded representing the HMAC digest
 signature of the request, generated from the secrey key.
 
-=head2 body_json
+## body_json
 
 Returns a string, the JSON-encoded representation of the data
 structure referenced by the "body" attribute. You don't normally need

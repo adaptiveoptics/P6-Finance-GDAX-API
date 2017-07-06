@@ -10,19 +10,22 @@ class Finance::GDAX::API::CoinbaseAccount does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::CoinbaseAccount - List Coinbase Accounts
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::CoinbaseAccount;
 
-  $coinbase_accts = Finance::GDAX::API::CoinbaseAccount->new;
+  $coinbase_accts = Finance::GDAX::API::CoinbaseAccount.new;
 
   # Array of Hashes of Coinbase accounts
-  $accounts = $coinbase_accts->get;
+  $accounts = $coinbase_accts.get;
+  =end code
 
 =head2 DESCRIPTION
 
@@ -30,7 +33,7 @@ Returns an array of Coinbase acccounts associated with the account.
 
 =head1 METHODS
 
-=head2 C<get>
+=head2 get
 
 Returns an array of Coinbase acccounts associated with the account.
 
@@ -98,9 +101,6 @@ The API documents the array of hashes as follows:
     },
   ]
 
-=cut
-
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -112,6 +112,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

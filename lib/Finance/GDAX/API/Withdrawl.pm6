@@ -10,7 +10,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
     has PositiveNum $.amount              is rw is required;
     has             $.currency            is rw is required;
 
-    method to-payment(:$!payment-method-id) {
+    method to-payment(:$!payment-method-id = $!payment-method-id) {
 	fail 'withdrawl to payments requires a payment-method-id' unless $.payment-method-id;
 	$.path   = 'withdrawls/payment-method';
 	$.method = 'POST';
@@ -21,7 +21,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
 	return self.send;
     }
 
-    method to-coinbase(:$!coinbase-account-id) {
+    method to-coinbase(:$!coinbase-account-id = $!coinbase-account-id) {
 	fail 'withdrawl to coinbase requires coinbase-account-id' unless $.coinbase-account-id;
 	$.path   = 'withdrawls/coinbase-account';
 	$.method = 'POST';
@@ -32,7 +32,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
 	return self.send;
     }
 
-    method to-crypto(:$!crypto-address) {
+    method to-crypto(:$!crypto-address = $!crypto-address) {
 	fail 'withdrawl to crypto requires crypto-address' unless $.crypto-address;
 	$.path   = 'withdrawls/crypto';
 	$.method = 'POST';
@@ -44,7 +44,8 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Withdrawl - Withdraw funds to a Payment Method or
@@ -52,58 +53,58 @@ Coinbase
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Withdraw;
 
-  $withdraw = Finance::GDAX::API::Withdraw->new(
+  $withdraw = Finance::GDAX::API::Withdraw.(
               currency => 'USD',
-              amount   => '250.00');
+              amount   => 250.00);
 
-  $withdraw->payment_method_id('kwji-wefwe-ewrgeurg-wef');
-
-  $response = $withdraw->to_payment;
+  $withdraw.payment-method-id = 'kwji-wefwe-ewrgeurg-wef';
+  %response = $withdraw.to-payment;
 
   # Or, to a Coinbase account
-  $withdraw->coinbase_account_id('woifhe-i234h-fwikn-wfihwe');
-
-  $response = $withdraw->to_coinbase;
+  $withdraw.coinbase-account-id = 'woifhe-i234h-fwikn-wfihwe';
+  %response = $withdraw.to-coinbase;
 
   # Or, to a Crypto address
-  $withdraw->crypto_address('1PtbhinXWpKZjD7CXfFR7kG8RF8vJTMCxA');
+  %withdraw->crypto-address(:crypto-address('1PtbhinXWpKZjD7CXfFR7kG8RF8vJTMCxA'));
+  =end code
 
 =head2 DESCRIPTION
 
 Used to transfer funds out of your GDAX account, either to a
 predefined Payment Method or your Coinbase account.
 
-Both methods require the same two attributes: "amount" and "currency"
+All methods require the same two attributes: "amount" and "currency"
 to be set, along with their corresponding payment or coinbase account
 id's.
 
 =head1 ATTRIBUTES
 
-=head2 C<payment_method_id> $string
+=head2 payment-method-id
 
 ID of the payment method.
 
-=head2 C<coinbase_account_id> $string
+=head2 coinbase-account-id
 
 ID of the coinbase account.
 
-=head2 C<crypto_address> $string
+=head2 crypto-address
 
 Withdraw funds to a crypto address.
 
-=head2 C<amount> $number
+=head2 amount
 
 The amount to be withdrawn.
 
-=head2 C<currency> $currency_string
+=head2 currency
 
 The currency of the amount -- for example "USD".
 
 =head1 METHODS
 
-=head2 C<to_payment>
+=head2 to-payment (:$payment-method-id)
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the payment.
@@ -118,7 +119,7 @@ keyed:
     "payout_at": "2016-08-20T00:31:09Z"
   }
 
-=head2 C<to_coinbase>
+=head2 to-coinbase (:$coinbase-account-id)
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the funds move.
@@ -132,7 +133,7 @@ keyed:
     "currency": "BTC",
   }
 
-=head2 C<to_crypto>
+=head2 to-crypto (:$crypto-address)
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the funds move.
@@ -145,9 +146,6 @@ keyed:
     "amount":"10.00",
     "currency": "BTC",
   }
-
-=cut
-
 
 =head1 AUTHOR
 
@@ -160,6 +158,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

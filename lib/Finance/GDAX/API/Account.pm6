@@ -7,39 +7,41 @@ class Finance::GDAX::API::Account does Finance::GDAX::API
     
     method get-all() {
 	$.method = 'GET';
-	$.path   = '/accounts';
+	$.path   = 'accounts';
 	return self.send.first;
     }
 
-    method get($id = $!id) {
-	fail 'Account ID is required' unless $id;
+    method get($!id = $!id) {
+	fail 'Account ID is required' unless $!id;
 	$.method = 'GET';
-	$.path   = "/accounts/$id";
+	$.path   = "accounts/$!id";
 	return self.send;
     }
 
-    method history($id = $!id) {
-	fail 'Account ID is required' unless $id;
+    method history($!id = $!id) {
+	fail 'Account ID is required' unless $!id;
 	$.method = 'GET';
-	$.path   = "/accounts/$id/ledger";
+	$.path   = "accounts/$!id/ledger";
 	return self.send;
     }
 
-    method holds($id = $!id) {
-	fail 'Account ID is required' unless $id;
+    method holds($!id = $!id) {
+	fail 'Account ID is required' unless $!id;
 	$.method = 'GET';
-	$.path   = "/accounts/$id/holds";
+	$.path   = "accounts/$!id/holds";
 	return self.send;
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Account - Work with GDAX Accounts
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Account;
 
   $account = Finance::GDAX::API::Account->new(
@@ -48,17 +50,20 @@ Finance::GDAX::API::Account - Work with GDAX Accounts
                             passphrase => 'woiefhvbno3iurbnv9p4h49h');
 
   # List all accounts
-  $accounts = $account->get_all;
-  if ($accounts->error) {
-      die 'There was an error '.$accounts->error;
+  
+  @accounts = $account.get-all;
+  if ($account.error) {
+      die 'There was an error ' ~ $account.error;
   }
-  foreach (@$accounts) {
-      print $$_{currency}." = ".$$_{balance};
+  for @accounts -> $a {
+      print $a<currency> ~ " = " ~ $a<balance>;
   }
 
   # List a single account
-  $info = $account->get("wiejfwef-237897-wefhwe-wef");
-  say 'Balance is ' . $$info{balance} . $$info{currency};
+  
+  $info = $account.get( id = "wiejfwef-237897-wefhwe-wef");
+  say 'Balance is ' ~ $info<balance> ~ $info<currency>;
+  =end code
 
 =head1 DESCRIPTION
 
@@ -67,15 +72,14 @@ Creates a GDAX account object to examine accounts.
 See Finance::GDAX::API for details on API key requirements that
 need to be passed in.
 
-The HTTP response code can be accessed via the "response_code"
+The HTTP response code can be accessed via the "response-code"
 attribute, and if the request resulted in a response code greater than
 or equal to 400, then the "error" attribute will be set to the error
 message returned by the GDAX servers.
 
-
 =head1 METHODS
 
-=head2 C<get_all>
+=head2 C<get-all>
 
 Returns an array of hashes, with each hash representing account
 details. According to the GDAX API, currently these hashes will
@@ -115,10 +119,10 @@ docs:
 
 However, this does not appear to be exactly what they are sending now.
 
-=head2 C<get> $account_id
+=head2 get (:$id)
 
-The get method requires passing an account id and returns a hash of
-the account information. Currently the GDAX API docs say they are:
+The get method requires an account id and returns a hash of the
+account information. Currently the GDAX API docs say they are:
 
 The following represents the data structure from their current API
 docs:
@@ -141,7 +145,7 @@ docs:
   default_amount [margin] amount defaulted on due to not being able to pay
                  back funding
 
-=head2 C<history> $account_id
+=head2 history (:$id)
 
 The history method returns an array of hashes representing the history
 of transactions on the specified account_id.
@@ -175,7 +179,7 @@ are:
   fee      Fee as a result of a trade
   rebate   Fee rebate as per our fee schedule
 
-=head2 C<holds> $account_id
+=head2 holds (:$id)
 
 The holds method returns an array of hashes representing the holds placed on the $account_id account, which happen due to active orders or pending withdrawls.
 
@@ -194,8 +198,6 @@ docs:
       }
   ]
 
-=cut
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -207,5 +209,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-}
+=end pod

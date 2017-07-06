@@ -10,19 +10,22 @@ class Finance::GDAX::API::UserAccount does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::UserAccount - Account Info
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::UserAccount;
 
-  $account = Finance::GDAX::API::UserAccount->new;
+  $account = Finance::GDAX::API::UserAccount.new;
 
   # List of trailing volume
-  $trailing = $account->trailing_volume;
+  @trailing = $account.trailing-volume;
+  =end code
 
 =head2 DESCRIPTION
 
@@ -30,7 +33,7 @@ Returns a list of hashes, representing the Trailing Volume on the account.
 
 =head1 METHODS
 
-=head2 C<trailing_volume>
+=head2 trailing_volume
 
 From the GDAX API:
 
@@ -53,9 +56,6 @@ midnight UTC.
     }
   ]
 
-=cut
-
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -67,6 +67,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

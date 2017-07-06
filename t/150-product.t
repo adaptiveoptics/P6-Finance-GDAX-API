@@ -13,7 +13,7 @@ use Finance::GDAX::API::Product;
 
 ok my $product = Finance::GDAX::API::Product.new, 'Instantiate';
 
-can-ok($product, 'id');
+can-ok($product, 'product-id');
 can-ok($product, 'level');
 can-ok($product, 'start');
 can-ok($product, 'end');

@@ -78,23 +78,24 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
     }
 
     method cancel(:$order-id!) {
-	$.method = 'DELETE';
-	$.path   = "orders/$order-id";
+	die 'cancel order requires a order-id' unless $order-id;
+	$.method   = 'DELETE';
+	$.path     = "orders/$order-id";
 	return self.send;
     }
 
-    method cancel_all(:$product-id!) {
+    method cancel_all(:$!product-id = $!product-id) {
 	$.path = 'orders';
-	self.add-to-url("?product_id=$product-id") if $product-id;
+	self.add-to-url("?product_id=$!product-id") if $!product-id;
 	$.method = 'DELETE';
 	return self.send;
     }
 
-    method list(:@status, :$product-id) {
+    method list(:@status, :$!product-id = $!product-id) {
 	$.path = 'orders';
 	my @qparams;
 	@status.map: { @qparams.push: "status=$^stat" };
-	@qparams.push: "product_id=$product-id" if $product-id;
+	@qparams.push: "product_id=$!product-id" if $!product-id;
 	if @qparams.elems {
 	    self.add-to-url('?' ~ @qparams.join('&'));
 	}
@@ -109,22 +110,28 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Order - Perl interface to the GDAX Order API
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Order;
 
-  $order = Finance::GDAX::API::Order->new;
-  $order->side('buy');
-  $order->type('market');
-  $order->product_id('BTC-USD');
-  $order->funds(500.00);
-  $response = $order->initiate;
-  if ($response->error) { die "Error: ".$response->error };
+  $order = Finance::GDAX::API::Order.new;
+
+  $order.side       = 'buy';
+  $order.type       = 'market';
+  $order.product-id = 'BTC-USD';
+  $order.funds      = 500.00;
+  
+  %response = $order->initiate;
+
+  if ($order->error) { die "Error: ".$order->error };
+  =end code
   
 
 =head1 DESCRIPTION
@@ -154,7 +161,7 @@ intiated:
 
 =head1 ATTRIBUTES (common to all order types)
 
-=head2 C<client_oid>
+=head2 client_oid
 
 [optional] Order ID selected by you to identify your order
 
@@ -172,7 +179,7 @@ used after the received message is sent.
 The server-assigned order id is also returned as the id field to this
 HTTP POST request.
 
-=head2 C<type>
+=head2 type
 
 [optional] limit, market, or stop (default is limit)
 
@@ -200,7 +207,7 @@ stop orders become active and wait to trigger based on the movement of
 the last trade price. There are two types of stop orders, sell stop
 and buy stop.
 
-=head2 C<side>
+=head2 side
 
 buy or sell
 
@@ -210,14 +217,14 @@ trade price changes to a value at or below the price.
 side: 'buy': Place a buy stop order, which triggers when the last
 trade price changes to a value at or above price.
 
-=head2 C<product_id>
+=head2 product-id
 
 A valid product id
 
 The product_id must match a valid product. The products list is
 available via the /products endpoint.
 
-=head2 C<stp>
+=head2 stp
 
 [optional] Self-trade prevention flag
 
@@ -233,9 +240,9 @@ self-trade behavior, specify the stp flag.
 
 =head1 ATTRIBUTES (limit orders)
 
-=head2 C<price>
+=head2 price
 
-Price per bitcoin
+Price per coin
 
 The price must be specified in quote_increment product units. The
 quote increment is the smallest unit of price. For the BTC-USD
@@ -243,9 +250,9 @@ product, the quote increment is 0.01 or 1 penny. Prices less than 1
 penny will not be accepted, and no fractional penny prices will be
 accepted. Not required for market orders.
 
-=head2 C<size>
+=head2 size
 
-Amount of BTC to buy or sell
+Amount of coin to buy or sell
 
 The size must be greater than the base_min_size for the product and no
 larger than the base_max_size. The size can be in any increment of the
@@ -253,15 +260,15 @@ base currency (BTC for the BTC-USD product), which includes satoshi
 units. size indicates the amount of BTC (or base currency) to buy or
 sell.
 
-=head2 C<time_in_force>
+=head2 time-in-force
 
 [optional] GTC, GTT, IOC, or FOK (default is GTC)
 
-=head2 C<cancel_after>
+=head2 cancel-after
 
 [optional] min, hour, day
 
-Requires time_in_force to be GTT
+Requires time-in-force to be GTT
 
 Time in force policies provide guarantees about the lifetime of an
 order. There are four policies: good till canceled GTC, good till time
@@ -284,7 +291,7 @@ matched.
 
 * Note, match also refers to self trades.
 
-=head2 C<post_only>
+=head2 post-only
 
 [optional] Post only flag
 
@@ -296,9 +303,9 @@ order will be rejected and no part of it will execute.
 
 =head1 ATTRIBUTES (market orders)
 
-=head2 C<size>
+=head2 size
 
-[optional]* Desired amount in BTC
+[optional]* Desired amount of coin
 
 The size must be greater than the base_min_size for the product and no
 larger than the base_max_size. The size can be in any increment of the
@@ -308,7 +315,7 @@ sell.
 
 * One of size or funds is required.
 
-=head2 C<funds>
+=head2 funds
 
 [optional]* Desired amount of quote currency to use
 
@@ -329,15 +336,15 @@ received.
 
 =head1 ATTRIBUTES (stop order)
 
-=head2 C<price>
+=head2 price
 
 Desired price at which the stop order triggers
 
-=head2 C<size>
+=head2 size
 
 [optional]* Desired amount in BTC
 
-=head2 C<funds>
+=head2 funds
 
 [optional]* Desired amount of quote currency to use
 
@@ -345,21 +352,21 @@ Desired price at which the stop order triggers
 
 =head1 ATTRIBUTES (margin parameters)
 
-=head2 C<overdraft_enabled>
+=head2 overdraft-enabled Bool
 
 * If true funding will be provided if the order's cost cannot be
   covered by the account's balance
 
-=head2 C<funding_amount>
+=head2 funding-amount
 
 * Amount of funding to be provided for the order
 
 * Margin can be used to receive funding by specifying either
-  overdraft_enabled or funding_amount.
+  overdraft-enabled or funding-amount.
 
 =head1 METHODS
 
-=head2 C<initiate>
+=head2 initiate
 
 Initiates the REST order request and returns the result, according to
 the current API docs, like
@@ -382,18 +389,18 @@ the current API docs, like
     "settled": false
   }
 
-If $order->error exists, then it will contain the error message.
+If $order.error exists, then it will contain the error message.
 
-=head2 C<cancel> $order_id
+=head2 cancel (:$order-id!)
 
-Cancels the $order_id, where $order_id is the server-assigned order_id
+Cancels the $order-id, where $order-id is the server-assigned order_id
 and not the client-selected client_oid.
 
-Probelms will be reported in ->error
+Problems will be reported in .error
 
-=head2 C<cancel_all> ($product_id)
+=head2 cancel-all (:$product-id?)
 
-Cancels all orders, or if $product_id is specified, cancels only
+Cancels all orders, or if $product-id is specified, cancels only
 orders within those prodcuts.
 
 An array will be returned, according to current API docs:
@@ -406,18 +413,17 @@ An array will be returned, according to current API docs:
     "34fecfbf-de33-4273-b2c6-baf8e8948be4"
   ]
 
-=head2 C<list> ($status, $product_id)
+=head2 list (:@status?, :$product-id?)
 
 Returns a list of orders. You can limit the list by specifying order
-status and product_id. These are positional parameters, so status must
-come first even if undefined (or 0).
+status and product_id.
 
-  $list = $order->list;
+  =begin code :skip-test
+  @list = $order.list;
 
-$status can be an arrayref, in which case it will list each of the
-given status.
-
-  $list = $order->list(['open','settled'], 'BTC-USD');
+  @list = $order->list(status     => ['open','settled'],
+		       product-id => 'BTC-USD');
+  =end code
 
 To quote from the API:
 
@@ -432,12 +438,9 @@ settled and the remaining holds (if any) have been removed.
 
 By default open, pending and active orders are returned.
 
-=head2 C<get> $order_id
+=head2 get (:$order-id!)
 
-Returns a hash of the specified $order_id
-
-=cut
-
+Returns a hash of the specified $order-id
 
 =head1 AUTHOR
 
@@ -450,6 +453,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

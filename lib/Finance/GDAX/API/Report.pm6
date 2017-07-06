@@ -5,8 +5,8 @@ use Finance::GDAX::API;
 class Finance::GDAX::API::Report does Finance::GDAX::API
 {
     has ReportType   $.type       is rw;
-    has              $.start-date is rw;
-    has              $.end-date   is rw;
+    has DateTime     $.start-date is rw;
+    has DateTime     $.end-date   is rw;
     has              $.product-id is rw;
     has              $.account-id is rw;
     has ReportFormat $.format     is rw = 'pdf';
@@ -16,26 +16,26 @@ class Finance::GDAX::API::Report does Finance::GDAX::API
     has $.report-id is rw;
 
     method get(:$!report-id = $!report-id) {
-	fail 'get report requires a report-id' unless $.report-id;
+	die 'get report requires a report-id' unless $.report-id;
 	$.path   = 'reports/$report_id';
 	$.method = 'GET';
 	return self.send;
     }
 
     method create() {
-	fail 'report type is required'       unless $.type;
-	fail 'report start date is required' unless $.start-date;
-	fail 'report end date is required'   unless $.end-date;
+	die 'report type is required'       unless $.type;
+	die 'report start date is required' unless $.start-date;
+	die 'report end date is required'   unless $.end-date;
 	my %body = ( type       => $.type,
-		     start_date => $.start-date,
-		     end_date   => $.end-date,
+		     start_date => $.start-date.Str,
+		     end_date   => $.end-date.Str,
 		     format     => $.format );
 	if ($.type eq 'fills') {
-	    fail 'product-id is required for fills report' unless $.product-id;
+	    die 'product-id is required for fills report' unless $.product-id;
             %body<product_id> = $.product-id;
 	}
 	if ($.type eq 'account') {
-	    fail 'account-id is required for account report' unless $.account-id;
+	    die 'account-id is required for account report' unless $.account-id;
             %body<account_id> = $.account-id;
 	}
 	%body<email> = $.email if $.email;
@@ -46,33 +46,36 @@ class Finance::GDAX::API::Report does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Report - Generate GDAX Reports
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Report;
 
-  $report = Finance::GDAX::API::Report->new(
-            start_date => '2017-06-01T00:00:00.000Z',
-            end_date   => '2017-06-15T00:00:00.000Z',
+  $report = Finance::GDAX::API::Report.new(
+            start_date => DateTime.new('2017-06-01T00:00:00.000Z'),
+            end_date   => DateTime.new('2017-06-15T00:00:00.000Z'),
             type       => 'fills');
 
-  $report->product_id('BTC-USD');
-  $result = $report->create;
+  $report.product-id = 'BTC-USD';
+  %result = $report.create;
 
-  $report_id = $$result{id};
+  $report_id = %result<id>;
 
   # After you create the report, you check if it's generated yet
 
-  $report = Finance::GDAX::API::Report->new;
-  $result = $report->get($report_id);
+  $report = Finance::GDAX::API::Report.new;
+  %result = $report.get(report-id => $report_id);
   
-  if ($$result{status} eq 'ready') {
-     `wget $$result{file_url}`;
+  if (%result<status> eq 'ready') {
+     qqx{ wget %result<file_url> };
   }
+  =end code
 
 =head2 DESCRIPTION
 
@@ -81,45 +84,45 @@ GDAX to create the report, then you must check to see if the report is
 ready for download at a URL. You can also specify and email address to
 have it mailed.
 
-Reports can be "fills" or "account". If fills, then a product_id is
-needed. If account then an account_id is needed.
+Reports can be "fills" or "account". If fills, then a product-id is
+needed. If account then an account-id is needed.
 
 The format can be "pdf" or "csv" and defaults to "pdf".
 
 =head1 ATTRIBUTES
 
-=head2 C<type> $string
+=head2 type
 
 Report type, either "fills" or "account". This must be set before
 calling the "create" method.
 
-=head2 C<start_date> $datetime_string
+=head2 start-date DateTime
 
-Start of datetime range of report in the format
-"2014-11-01T00:00:00.000Z" (required for create)
+Start of datetime range of report as a DateTime object (required for
+create)
 
-=head2 C<end_date> $datetime_string
+=head2 end-date DateTime
 
-End of datetime range of report in the format
-"2014-11-01T00:00:00.000Z" (required for create)
+End of datetime range of report as a DateTime object (required for
+create)
 
-=head2 C<product_id> $string
+=head2 product-id
 
 The product ID, eg 'BTC-USD'. Required for fills type.
 
-=head2 C<account_id> $string
+=head2 account-id
 
 The account ID. Required for account type.
 
-=head2 C<format> $string
+=head2 format (default: "pdf")
 
-Output format of report, either "pdf" or "csv" (default "pdf")
+Output format of report, either "pdf" or "csv"
 
-=head2 C<email> $string
+=head2 email
 
 Email address to send the report to (optional)
 
-=head2 C<report_id> $string
+=head2 report-id
 
 This is used for the "get" method only, and can also be passed as a
 parameter to the "get" method.
@@ -128,7 +131,7 @@ It is the report id as returned by the "create" method.
 
 =head1 METHODS
 
-=head2 C<create>
+=head2 create
 
 Creates the GDAX report based upon the attributes set and returns a
 hash result as documented in the API:
@@ -147,7 +150,7 @@ hash result as documented in the API:
     }
   }
 
-=head2 C<get> [$report_id]
+=head2 get (:$report_id)
 
 Returns a hash representing the status of the report created with the
 "create" method.
@@ -188,9 +191,6 @@ like this:
     }
   }
 
-=cut
-
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -202,6 +202,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

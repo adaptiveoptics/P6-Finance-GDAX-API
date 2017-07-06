@@ -5,6 +5,7 @@ role Finance::GDAX::API::URL
     has      $.production-url is rw = 'https://api.gdax.com';
     has      $.testing-url    is rw = 'https://api-public.sandbox.gdax.com';
     has Bool $.debug          is rw = True;
+    has Bool $.big-debug      is rw = False;
 
     has Str  $.path is rw = '/';
 
@@ -29,12 +30,12 @@ role Finance::GDAX::API::URL
     }
 }
 
-#|{
 =begin pod
 
-=TITLE role Finance::GDAX::API::URL
+=head1 NAME
 
-=SUBTITLE Role doing URL assembly for GDAX REST API classes
+Finance::GDAX::API::URL - Role doing URL assembly for GDAX REST
+API classes
 
 =head1 SYNOPSIS
 
@@ -54,7 +55,7 @@ This role builds URLs for Finance::GDAX::API classes
 
 =head1 ATTRIBUTES
 
-=head2 debug
+=head2 debug Bool
 
 Bool that sets debug mode (will use sandbox). Defaults to true (1).
 
@@ -67,11 +68,20 @@ The base URI for production requests, including the https://
 The base URI for testing requests to the GDAX sandbox, including the
 https://
 
+=head2 path (default: "/")
+
+The root path of the URI, required for all API requests. When given,
+never provide the initial "/".
+
 =head1 METHODS
 
 =head2 get-url
 
 Returns a string of the assembled URL
+
+=head2 get-uri
+
+Returns the URI portion of the assembled URL
 
 =head2 add-to-url
 
@@ -94,4 +104,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =end pod
-}

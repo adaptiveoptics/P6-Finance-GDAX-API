@@ -9,8 +9,8 @@ class Finance::GDAX::API::Deposit does Finance::GDAX::API
     has PositiveNum $.amount              is rw is required;
     has             $.currency            is rw is required;;
 
-    method from-payment() {
-	fail 'payments need a payment id set' unless $.payment-method-id;
+    method from-payment(:$!payment-method-id = $!payment-method-id) {
+	die 'payments need a payment id set' unless $.payment-method-id;
 	$.path   = 'deposits/payment-method';
 	$.method = 'POST';
 	$.body   = { amount            => $.amount,
@@ -20,8 +20,8 @@ class Finance::GDAX::API::Deposit does Finance::GDAX::API
 	return self.send;
     }
 
-    method from-coinbase() {
-	fail 'coinbase deposit requires a coinbase account id' unless $.coinbase-account-id;
+    method from-coinbase(:$!coinbase-account-id = $!coinbase-account-id) {
+	die 'coinbase deposit requires a coinbase account id' unless $.coinbase-account-id;
 	$.path   = 'deposits/coinbase-account';
 	$.method = 'POST';
 	$.body   = { amount              => $.amount,
@@ -32,7 +32,8 @@ class Finance::GDAX::API::Deposit does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Deposit - Deposit funds via Payment Method or
@@ -40,19 +41,19 @@ Coinbase
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Deposit;
 
-  $deposit = Finance::GDAX::API::Deposit->new(
+  $deposit = Finance::GDAX::API::Deposit.new(
           currency => 'USD',
-          amount   => '250.00');
-  $deposit->payment_method_id('kwji-wefwe-ewrgeurg-wef');
-
-  $response = $deposit->from_payment;
+          amount   => 250.00);
+  
+  $deposit.payment-method-id = 'kwji-wefwe-ewrgeurg-wef';
+  $response $deposit.from-payment;
 
   # Or, from a Coinbase account
-  $deposit->coinbase_account_id('woifhe-i234h-fwikn-wfihwe');
-
-  $response = $deposit->from_coinbase;
+  $deposit.from-coinbase(coinbase-account-id => 'woifhe-i234h-fwikn-wfihwe');
+  =end code
 
 =head2 DESCRIPTION
 
@@ -65,32 +66,32 @@ id's.
 
 =head1 ATTRIBUTES
 
-=head2 C<payment_method_id> $string
+=head2 payment-method-id
 
 ID of the payment method.
 
-Either this or coinbase_account_id must be set.
+Either this or coinbase-account-id must be set.
 
-=head2 C<coinbase_account_id> $string
+=head2 coinbase-account-id
 
 ID of the coinbase account.
 
-Either this or payment_method_id must be set.
+Either this or payment-method-id must be set.
 
-=head2 C<amount> $number
+=head2 amount
 
 The amount to be deposited.
 
-=head2 C<currency> $currency_string
+=head2 currency
 
 The currency of the amount -- for example "USD".
 
 =head1 METHODS
 
-=head2 C<from_payment>
+=head2 from-payment (:$payment-method-id?)
 
-All attributes must be set before calling this method. The return
-value is a hash that will describe the result of the payment.
+All necessary attributes must be set when calling this method. The
+return value is a hash that will describe the result of the payment.
 
 From the current GDAX API documentation, this is how that returned hash is
 keyed:
@@ -101,10 +102,11 @@ keyed:
     "payment_method_id": "bc677162-d934-5f1a-968c-a496b1c1270b"
   }
 
-=head2 C<from_coinbase>
+=head2 from_coinbase (:$coinbase-account-id?)
 
-All attributes must be set before calling this method. The return
-value is a hash that will describe the result of the funds move.
+All necessary attributes must be set when calling this method. The
+return value is a hash that will describe the result of the funds
+move.
 
 From the current GDAX API documentation, this is how that returned hash is
 keyed:
@@ -114,9 +116,6 @@ keyed:
     "amount": "10.00",
     "currency": "BTC",
   }
-
-=cut
-
 
 =head1 AUTHOR
 
@@ -129,6 +128,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

@@ -66,19 +66,29 @@ class Finance::GDAX::API::Product does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::UserAccount - Product Information
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Product;
 
-  $product = Finance::GDAX::API::Product->new;
+  $product = Finance::GDAX::API::Product.new;
 
   # List of all products
-  $products = $product->list;
+  @products = $product.list;
+
+  # List historic rates of product
+  $product.product-id  = 'BTC-USD';
+  $product.granularity = 600;
+  $product.start       = DateTime.new('2017-06-01T00:00:00.000Z');
+  $product.end         = DateTime.new('2017-06-02T00:00:00.000Z');
+  %rates = $product.historic-rates
+  =end code
 
 =head2 DESCRIPTION
 
@@ -86,12 +96,12 @@ Returns various information about GDAX products.
 
 =head1 ATTRIBUTES
 
-=head2 C<id> $string
+=head2 product-id
 
-The GDAX product id. Necessary for order_book, get_trades,
-historic_rates (or passed as parameter to method).
+The GDAX product id. Necessary for order-book, trades,
+historic-rates (or passed as parameter to method).
 
-=head2 C<level> $integer (default: 1)
+=head2 level (default: 1)
 
 The detail level in the return hash of the method order_book:
 
@@ -103,21 +113,21 @@ The detail level in the return hash of the method order_book:
 Levels 1 and 2 are aggregated and return the number of orders at each
 level. Level 3 is non-aggregated and returns the entire order book.
 
-=head2 C<start> $datetime_string (ISO8601)
+=head2 start DateTime
 
-Start time for the historic_rates method.
+Start time for the historic_rates method as DateTime object
 
-=head2 C<end> $datetime_string (ISO8601)
+=head2 end DateTime
 
-End time for the historic_rates method.
+End time for the historic_rates method as DateTime object
 
-=head2 C<granularity> $seconds
+=head2 granularity
 
 Granularity in seconds for the historic_rates method.
 
 =head1 METHODS
 
-=head2 C<list>
+=head2 list
 
 Returns a list of available currency pairs for trading.
 
@@ -139,11 +149,11 @@ well as the price increment.
 The order price must be a multiple of this increment (i.e. if the
 increment is 0.01, order prices of 0.001 or 0.021 would be rejected).
 
-=head2 C<order_book> [$product_id]
+=head2 order-book (:$product-id)
 
 Returns a hash of open orders for a product. The $product_id can be
-passed in as a parameter to the method, or the attribute "id" can be
-set. The parameter takes precidence.
+passed in as a parameter to the method, or the attribute "product-id"
+can be set. The parameter takes precidence.
 
 The amount of detail returned is customized with the "level" attribute.
 
@@ -203,12 +213,12 @@ Level 3:
 The GDAX API warns you that abuse of level 3 polling with cause your
 access to be limited or blocked -- to use websocket streams instead.
 
-=head2 C<ticker> [$product_id]
+=head2 ticker (:$product-id)
 
 Returns snapshot information about the last trade (tick), best bid/ask
 and 24h volume.
 
-Takes parameter product_id or uses "id" attribute.
+Takes parameter product-id or uses "product-id" attribute.
 
 Real-time updates
 
@@ -225,10 +235,10 @@ and listening for match messages.
   "time": "2015-11-14T20:46:03.511254Z"
   }
 
-=head2 C<trades> [$product_id]
+=head2 trades (:$product-id)
 
-Return an array of hashes of the latest trades for a given product_id,
-which can be a parameter to the method or the attribute "id".
+Return an array of hashes of the latest trades for a given product-id,
+which can be a parameter to the method or the attribute "product-id".
 
   [{
     "time": "2014-11-07T22:19:28.578544Z",
@@ -251,8 +261,8 @@ order that was open on the order book. buy side indicates a down-tick
 because the maker was a buy order and their order was
 removed. Conversely, sell side indicates an up-tick.
 
-=head2 C<historic_rates> [$product_id]
-
+=head2 historic-rates (:$product-id)
+			  
 Returns an array of arrays of historic rates for a product. The array
 buckets are ordered as follows:
 
@@ -274,9 +284,9 @@ Each bucket is an array of the following information:
     close  closing price (last trade) in the bucket interval
     volume volume of trading activity during the bucket interval
 
-=head2 C<day_stats> [$product_id]
+=head2 day-stats (:$product-id)
 
-Returns a hash of the stats for the given $product_id (or "id"
+Returns a hash of the stats for the given $product-id (or "product-id"
 attribute) accumulated for the last 24 hours.
 
 API:
@@ -302,10 +312,6 @@ units. open, high, low are in quote currency units.
           'volume' => 0
         };
 
-
-=cut
-
-
 =head1 AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
@@ -317,6 +323,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

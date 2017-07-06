@@ -24,8 +24,8 @@ can-ok($report, 'report-id');
 can-ok($report, 'get');
 can-ok($report, 'create');
 
-ok ($report.start-date = '2017-06-01T00:00:00.000Z'), 'can set start_date';
-ok ($report.end-date   = '2017-06-15T00:00:00.000Z'), 'can set end_date';
+ok ($report.start-date = DateTime.new('2017-06-01T00:00:00.000Z')), 'can set start_date';
+ok ($report.end-date   = DateTime.new('2017-06-15T00:00:00.000Z')), 'can set end_date';
 
 is $report.format, 'pdf', 'Default format is good';
 dies-ok { $report.format = 'badformat' }, 'format dies on bad value';
@@ -46,6 +46,7 @@ if $do-online-tests {
      ok (my $result = $report.create), 'can create fills BTC-USD report';
      is $result.WHAT, (Hash), 'create returns hash';
      ok $result<id>.defined, 'got a report id back';
+     note "ERROR: " ~ $report.error if $report.error;
 
      $report = Finance::GDAX::API::Report.new;
      ok ($report.report-id = $result<id>), 'can assign report_id for getting';

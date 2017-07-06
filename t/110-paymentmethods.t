@@ -11,7 +11,7 @@ $helper.set-environment if $do-online-tests;
 use-ok 'Finance::GDAX::API::PaymentMethod', 'Finance::GDAX::API::PaymentMethod useable';
 use Finance::GDAX::API::PaymentMethod;
 
-ok my $pay_method = Finance::GDAX::API::PaymentMethod.new;
+ok my $pay_method = Finance::GDAX::API::PaymentMethod.new, "instatiated";
 
 can-ok($pay_method, 'get');
 

@@ -11,7 +11,7 @@ class Finance::GDAX::API::Funding does Finance::GDAX::API
     has PositiveNum $.amount   is rw;
     has             $.currency is rw;
 
-    method get() {
+    method get(:$!status = $!status) {
 	$.path = 'funding';
 	self.add-to-url('?status=' ~ $!status) if $!status;
 	$.method = 'GET';
@@ -33,24 +33,28 @@ class Finance::GDAX::API::Funding does Finance::GDAX::API
     }
 }
 
-#|{
+=begin pod
+
 =head1 NAME
 
 Finance::GDAX::API::Funding - List GDAX margin funding records
 
 =head1 SYNOPSIS
 
+  =begin code :skip-test
   use Finance::GDAX::API::Funding;
 
-  $funding = Finance::GDAX::API::Funding->new;
-  $records = $funding->get;
+  $funding = Finance::GDAX::API::Funding.new;
+  @records = $funding.get;
 
   # To limit records based on current status
-  $funding->status('settled');
-  $records = $funding->get;
+  $funding.status = 'settled';
+  @records = $funding.get;
 
   # To repay some margin funding
-  $funding->repay('255.45', 'USD');
+  $funding->repay(amount   => 255.45,
+		  currency => 'USD' );
+  =end code
 
 =head2 DESCRIPTION
 
@@ -99,19 +103,18 @@ create a funding record.
 
 =head1 ATTRIBUTES
 
-=head2 C<status> $string
+=head2 status
 
-Limit the records returned to those records of status
-$status.
+Limit the records returned to those records of given status.
 
 Currently the GDAX API states these status must be "outstanding",
 "settled" or "rejected".
 
-=head2 C<amount> $number
+=head2 amount
 
 The amount to be repaid to margin.
 
-=head2 C<currency> $currency_string
+=head2 currency
 
 The currency of the amount -- for example "USD".
 
@@ -119,20 +122,17 @@ You must specify currency and amount when calling the repay method.
 
 =head1 METHODS
 
-=head2 C<get>
+=head2 get (:$status?)
 
 Returns an array of funding records from GDAX.
 
-=head2 C<repay> [$amount, $currency]
+=head2 repay (:$amount!, :$currency!)
 
 Repays the margin, from the oldest funding records first.
 
 Specifying the optional ordered parameters $amount and $currency on
 the method call will override any attribute values set for amount and
 currency.
-
-=cut
-
 
 =head1 AUTHOR
 
@@ -145,6 +145,4 @@ This software is copyright (c) 2017 by Home Grown Systems, SPC.
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
-
-}
+=end pod

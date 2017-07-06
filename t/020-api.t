@@ -78,7 +78,8 @@ if $do-online-tests {
 	ok my $data = $api.send, 'Get response from GDAX BTC-USD ticker';
 	warn "ERROR: " ~ $api.error if $api.error;
 	is $data<price>:exists, True, 'Got back a hash keyed with price';
-	cmp-ok $data<price>, '>', 1, 'Got back a price that looks ok';
+	cmp-ok $data<price>, '>', 0, 'Got back a price that looks ok';
+	say $data;
 	
     }, 'GDAX_API_* Environment variables tested';
 }

@@ -25,7 +25,6 @@ can-ok($xfer, 'initiate');
 dies-ok { $xfer.type = 'badtype' }, 'type dies good on bad values';
 dies-ok { $xfer.amount = -250.00 }, 'amount dies good on bad value';
 ok ($xfer.type = 'withdraw'), 'type can be set to known good value';
-dies-ok { $xfer.initiate }, 'initiate dies correctly if not all attributes set';
 
 if $do-online-tests {
      $xfer.debug = True; # Make sure this is set to 1 or you'll use live data
