@@ -183,15 +183,13 @@ Returns a string, the JSON-encoded representation of the data
 structure referenced by the "body" attribute. You don't normally need
 to look at this.
 
-=head1 AUTHOR
+# AUTHOR
 
 Mark Rushing <mark@orbislumen.net>
 
-=head1 COPYRIGHT AND LICENSE
+# COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2017 by Home Grown Systems, SPC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 6 programming language system itself.
-
-=end pod
