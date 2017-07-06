@@ -1,4 +1,4 @@
-#NAME
+# NAME
 
 Finance::GDAX::API - Build and sign GDAX REST request (Role)
 
