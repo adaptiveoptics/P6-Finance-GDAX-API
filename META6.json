@@ -33,7 +33,7 @@
 		  "MIME::Base64"
 		],
     "test-depends" : [ "Test",
-		       "File::Temp",
+		       "File::Temp"
 		     ],
     "resources" : [ ],
     "source-url" : "git://github.com/adaptiveoptics/P6-Finance-GDAX-API.git"
