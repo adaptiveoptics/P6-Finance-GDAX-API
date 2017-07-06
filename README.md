@@ -1,6 +1,6 @@
 # NAME
 
-Finance::GDAX::API - Build and sign GDAX REST request (Role)
+Finance::GDAX::API - Role for GDAX Crypto-currency Exchange API
 
 # SYNOPSIS
 
@@ -42,7 +42,7 @@ Creates a signed GDAX REST request - you need to provide the key,
 secret and passphrase attributes, or specify that they be provided by
 the external_secret method.
 
-All Finance::GDAX::API::* modules doe this role to implement their
+All Finance::GDAX::API::* modules do this role to implement their
 particular portion of the GDAX API.
 
 This is a low-level implementation of the GDAX API and complete,
