@@ -24,14 +24,13 @@
 	"Finance::GDAX::API::TypeConstraints" : "lib/Finance/GDAX/API/TypeConstraints.pm6",
 	"Finance::GDAX::API::URL"             : "lib/Finance/GDAX/API/URL.pm6",
 	"Finance::GDAX::API::UserAccount"     : "lib/Finance/GDAX/API/UserAccount.pm6",
-	"Finance::GDAX::API::Withdrawl"       : "lib/Finance/GDAX/API/Withdrawl.pm6",
-
+	"Finance::GDAX::API::Withdrawl"       : "lib/Finance/GDAX/API/Withdrawl.pm6"
     },
     "depends" : [ "JSON::Fast",
 		  "LibCurl",
 		  "Digest::HMAC",
 		  "Digest::SHA",
-		  "MIME::Base64",
+		  "MIME::Base64"
 		],
     "test-depends" : [ "Test",
 		       "File::Temp",
