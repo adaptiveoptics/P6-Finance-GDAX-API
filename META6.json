@@ -3,7 +3,7 @@
     "name" : "Finance::GDAX::API",
     "license" : "Artistic-2.0",
     "version" : "0.0.1",
-    "description" : "GDAX Cyrptocurrency Exchange low-level API implementation.",
+    "description" : "GDAX Crypto-currency Exchange low-level API implementation",
     "authors" : [ "Mark Rushing" ],
     "provides" : {
 	"Finance::GDAX::API"                  : "lib/Finance/GDAX/API.pm6",
