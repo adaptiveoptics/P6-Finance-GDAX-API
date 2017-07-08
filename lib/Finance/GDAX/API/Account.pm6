@@ -171,6 +171,15 @@ docs:
       }
   ]
 
+In the case of transfers, the dtail may look like this:
+  
+  details    => {
+    transfer_id   => "d50ec984-77a8-460a-b958-66f114b0de9b",
+    transfer_type => "deposit",
+  },
+
+      
+
 With different "type"'s meaning different "details" -- and those types
 are:
 
