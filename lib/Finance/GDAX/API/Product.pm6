@@ -20,7 +20,7 @@ class Finance::GDAX::API::Product does Finance::GDAX::API
 	return self.send;
     }
 
-    method order-book(:$!product-id = $!product-id) {
+    method order-book(:$!product-id = $.product-id) {
 	die 'order_book requires a product id' unless $.product-id;
 	$.path = 'products';
 	self.add-to-url($.product-id ~ "?level=" ~ $.level);
@@ -28,21 +28,21 @@ class Finance::GDAX::API::Product does Finance::GDAX::API
 	return self.send;
     }
 
-    method ticker(:$!product-id = $!product-id) {
+    method ticker(:$!product-id = $.product-id) {
 	die 'ticker requires a product id' unless $.product-id;
 	$.method = 'GET';
 	$.path   = "products/" ~ $.product-id ~ "/ticker";
 	return self.send;
     }
 
-    method trades(:$!product-id = $!product-id) {
+    method trades(:$!product-id = $.product-id) {
 	die 'trades requires a product id' unless $.product-id;
 	$.method = 'GET';
 	$.path   = "products/" ~ $.product-id ~ "/trades";
 	return self.send;
     }
 
-    method historic-rates(:$!product-id = $!product-id) {
+    method historic-rates(:$!product-id = $.product-id) {
 	die 'historic rates requires a product id' unless $.product-id;
 	die 'historic rates requires start time'   unless $.start;
 	die 'historic rates requires end time'     unless $.end;
@@ -56,7 +56,7 @@ class Finance::GDAX::API::Product does Finance::GDAX::API
 	return self.send;
     }
 
-    method day-stats(:$!product-id = $!product-id) {
+    method day-stats(:$!product-id = $.product-id) {
 	die 'day_stats requires a product id' unless $.product-id;
 	$.method = 'GET';
 	$.path   = "products";

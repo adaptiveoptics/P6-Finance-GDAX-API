@@ -11,24 +11,24 @@ class Finance::GDAX::API::Account does Finance::GDAX::API
 	return self.send.first;
     }
 
-    method get(:$!id = $!id) {
-	fail 'Account ID is required' unless $!id;
+    method get(:$!id = $.id) {
+	fail 'Account ID is required' unless $.id;
 	$.method = 'GET';
 	$.path   = "accounts/$!id";
 	return self.send;
     }
 
-    method history(:$!id = $!id) {
-	fail 'Account ID is required' unless $!id;
+    method history(:$!id = $.id) {
+	fail 'Account ID is required' unless $.id;
 	$.method = 'GET';
 	$.path   = "accounts/$!id/ledger";
 	return self.send;
     }
 
-    method holds(:$!id = $!id) {
-	fail 'Account ID is required' unless $!id;
+    method holds(:$!id = $.id) {
+	fail 'Account ID is required' unless $.id;
 	$.method = 'GET';
-	$.path   = "accounts/$!id/holds";
+	$.path   = "accounts/$.id/holds";
 	return self.send;
     }
 }

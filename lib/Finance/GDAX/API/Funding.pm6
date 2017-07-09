@@ -11,22 +11,22 @@ class Finance::GDAX::API::Funding does Finance::GDAX::API
     has PositiveNum $.amount   is rw;
     has             $.currency is rw;
 
-    method get(:$!status = $!status) {
+    method get(:$!status = $.status) {
 	$.path = 'funding';
-	self.add-to-url('?status=' ~ $!status) if $!status;
+	self.add-to-url('?status=' ~ $.status) if $.status;
 	$.method = 'GET';
 	return self.send;
     }
 
     method repay(:$!amount, :$!currency) {
 	
-	unless $!amount and $!currency {
+	unless $.amount and $.currency {
 	    fail 'repay must specify an amount and currency';
 	}
 	
 	$.method('POST');
-	$.body({ amount   => $!amount,
-		 currency => $!currency });
+	$.body({ amount   => $.amount,
+		 currency => $.currency });
 	
 	$.path('funding/repay');
 	return self.send;

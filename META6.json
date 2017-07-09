@@ -2,7 +2,7 @@
     "perl" : "6.c",
     "name" : "Finance::GDAX::API",
     "license" : "Artistic-2.0",
-    "version" : "0.0.1",
+    "version" : "0.0.2",
     "description" : "GDAX Crypto-currency Exchange low-level API implementation",
     "authors" : [ "Mark Rushing" ],
     "provides" : {

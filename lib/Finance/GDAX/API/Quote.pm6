@@ -5,7 +5,7 @@ class Finance::GDAX::API::Quote does Finance::GDAX::API
 {
     has $.product-id is rw = 'BTC-USD';
 
-    method get(:$!product-id = $!product-id) {
+    method get(:$!product-id = $.product-id) {
 	die 'quotes need a product-id' unless $.product-id;
 	$.path   = 'products';
 	$.method = 'GET';

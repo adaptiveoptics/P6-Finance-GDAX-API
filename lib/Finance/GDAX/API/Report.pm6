@@ -15,7 +15,7 @@ class Finance::GDAX::API::Report does Finance::GDAX::API
     # For checking with "get" method
     has $.report-id is rw;
 
-    method get(:$!report-id = $!report-id) {
+    method get(:$!report-id = $.report-id) {
 	die 'get report requires a report-id' unless $.report-id;
 	$.path   = 'reports/$report_id';
 	$.method = 'GET';

@@ -84,18 +84,18 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
 	return self.send;
     }
 
-    method cancel_all(:$!product-id = $!product-id) {
+    method cancel_all(:$!product-id = $.product-id) {
 	$.path = 'orders';
-	self.add-to-url("?product_id=$!product-id") if $!product-id;
+	self.add-to-url("?product_id=$!product-id") if $.product-id;
 	$.method = 'DELETE';
 	return self.send;
     }
 
-    method list(:@status, :$!product-id = $!product-id) {
+    method list(:@status, :$!product-id = $.product-id) {
 	$.path = 'orders';
 	my @qparams;
 	@status.map: { @qparams.push: "status=$^stat" };
-	@qparams.push: "product_id=$!product-id" if $!product-id;
+	@qparams.push: "product_id=$!product-id" if $.product-id;
 	if @qparams.elems {
 	    self.add-to-url('?' ~ @qparams.join('&'));
 	}

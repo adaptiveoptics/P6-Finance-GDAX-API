@@ -10,7 +10,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
     has PositiveNum $.amount              is rw is required;
     has             $.currency            is rw is required;
 
-    method to-payment(:$!payment-method-id = $!payment-method-id) {
+    method to-payment(:$!payment-method-id = $.payment-method-id) {
 	fail 'withdrawl to payments requires a payment-method-id' unless $.payment-method-id;
 	$.path   = 'withdrawls/payment-method';
 	$.method = 'POST';
@@ -21,7 +21,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
 	return self.send;
     }
 
-    method to-coinbase(:$!coinbase-account-id = $!coinbase-account-id) {
+    method to-coinbase(:$!coinbase-account-id = $.coinbase-account-id) {
 	fail 'withdrawl to coinbase requires coinbase-account-id' unless $.coinbase-account-id;
 	$.path   = 'withdrawls/coinbase-account';
 	$.method = 'POST';
@@ -32,7 +32,7 @@ class Finance::GDAX::API::Withdrawl does Finance::GDAX::API
 	return self.send;
     }
 
-    method to-crypto(:$!crypto-address = $!crypto-address) {
+    method to-crypto(:$!crypto-address = $.crypto-address) {
 	fail 'withdrawl to crypto requires crypto-address' unless $.crypto-address;
 	$.path   = 'withdrawls/crypto';
 	$.method = 'POST';

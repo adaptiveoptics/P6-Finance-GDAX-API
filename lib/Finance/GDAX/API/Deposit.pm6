@@ -9,7 +9,7 @@ class Finance::GDAX::API::Deposit does Finance::GDAX::API
     has PositiveNum $.amount              is rw is required;
     has             $.currency            is rw is required;;
 
-    method from-payment(:$!payment-method-id = $!payment-method-id) {
+    method from-payment(:$!payment-method-id = $.payment-method-id) {
 	die 'payments need a payment id set' unless $.payment-method-id;
 	$.path   = 'deposits/payment-method';
 	$.method = 'POST';
@@ -20,7 +20,7 @@ class Finance::GDAX::API::Deposit does Finance::GDAX::API
 	return self.send;
     }
 
-    method from-coinbase(:$!coinbase-account-id = $!coinbase-account-id) {
+    method from-coinbase(:$!coinbase-account-id = $.coinbase-account-id) {
 	die 'coinbase deposit requires a coinbase account id' unless $.coinbase-account-id;
 	$.path   = 'deposits/coinbase-account';
 	$.method = 'POST';
