@@ -43,7 +43,7 @@ cmp-ok $api.timestamp, '<=', time, 'Timestamp looks like timestamp';
 is $api.get-url, 'https://api-public.sandbox.gdax.com', 'sandbox is default URL';
 
 ok ($api.body = %( name => 'Test Name', pregnant => False, children => @['John', 'Cindy'] )), 'body sets';
-ok my $json = $api.body-json, 'Call to body_json';
+ok my $json = $api.body-json, 'Call to body-json';
 ok (my %json-test = $api.from_json($json)), 'JSON converts back to hash';
 cmp-ok %json-test<name>, 'eq', 'Test Name', 'JSON name key/val compares';
 cmp-ok %json-test<pregnant>, '==', False, 'JSON pregnant bool key/val compares';

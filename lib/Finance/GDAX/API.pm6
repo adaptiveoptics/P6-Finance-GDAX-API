@@ -22,14 +22,12 @@ role Finance::GDAX::API does Finance::GDAX::API::URL
     has      @!valid-attributes = <key secret passphrase>;
     has      $!useragent        = 'LibCurl-Perl6';
 
-    method save-secrets-to-environment {
-	%*ENV<GDAX_API_KEY>        = $.key;
-	%*ENV<GDAX_API_SECRET>     = $.secret;
-	%*ENV<GDAX_API_PASSPHRASE> = $.passphrase;
-    }
-
     method body-json {
 	return to-json $.body, :!pretty;
+    }
+
+    method from_json($json) {
+	return from-json $json;
     }
 
     method signature {
@@ -62,9 +60,13 @@ role Finance::GDAX::API does Finance::GDAX::API::URL
 					  send => self.body-json)}
 	    default       {fail 'Method must be GET, POST, PUT or DELETE'}
 	}
-	note 'URL: ' ~ self.get-url if $.big-debug;
 	$client.perform;
-	my $content = from-json($client.content);
+	if $.big-debug {
+	    note 'URL: ' ~ self.get-url;
+	    note self.get-url ~ " RC: " ~ $client.response-code;
+	    note $client.content;
+	}
+	my $content = self.from_json($client.content);
 	$!response-code = $client.response-code;
 	if ($!response-code >= 400) {
 	    $!error = $content<message> || 'no error message returned';
@@ -90,6 +92,13 @@ role Finance::GDAX::API does Finance::GDAX::API::URL
 	}
 	return True;
     }
+
+    method save-secrets-to-environment {
+	%*ENV<GDAX_API_KEY>        = $.key;
+	%*ENV<GDAX_API_SECRET>     = $.secret;
+	%*ENV<GDAX_API_PASSPHRASE> = $.passphrase;
+    }
+
 }
 
 
@@ -254,7 +263,7 @@ filename.
 
 This method will die easily if things aren't right.
 
-=head2 save_secrets_to_environment
+=head2 save-secrets-to-environment
 
 Another convenience method that can be used to store your secrets into
 the volatile environment in which your perl is running, so that
@@ -272,7 +281,7 @@ and "passphrase" to the environment variables "GDAX_API_KEY",
 Returns a string, base64-encoded representing the HMAC digest
 signature of the request, generated from the secrey key.
 
-=head2 body_json
+=head2 body-json
 
 Returns a string, the JSON-encoded representation of the data
 structure referenced by the "body" attribute. You don't normally need
