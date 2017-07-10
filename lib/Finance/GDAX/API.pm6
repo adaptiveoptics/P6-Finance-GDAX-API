@@ -32,10 +32,6 @@ role Finance::GDAX::API does Finance::GDAX::API::URL
 	return to-json $.body, :!pretty;
     }
 
-    method from_json($json) {
-	return from-json $json;
-    }
-
     method signature {
 	my $data = $.timestamp ~ $.method ~ self.get-uri;
 	$data ~= self.body-json if $.body;
