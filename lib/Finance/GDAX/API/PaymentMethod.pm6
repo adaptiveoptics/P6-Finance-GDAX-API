@@ -6,7 +6,7 @@ class Finance::GDAX::API::PaymentMethod does Finance::GDAX::API
     method get() {
 	$.method = 'GET';
 	$.path   = 'payment-methods';
-	return self.send;
+	return |self.send;
     }
 }
 
