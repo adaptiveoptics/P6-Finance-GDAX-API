@@ -35,7 +35,7 @@ Returns an array of payment methods available on the account.
 
 =head2 get
 
-Returns an array of payment methods available on the account.
+Returns a list of payment methods available on the account.
 
 The API documents the array of hashes as follows:
 

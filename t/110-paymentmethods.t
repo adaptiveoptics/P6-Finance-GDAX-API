@@ -19,7 +19,7 @@ if $do-online-tests {
      $pay_method.debug = True; # Make sure this is set to 1 or you'll use live data
 
      ok (my $result = $pay_method.get), 'can get all funding';
-     is $result.WHAT, (Array), 'get returns array';
+     is $result.WHAT, (List), 'get returns list';
 }
 
 done-testing;
