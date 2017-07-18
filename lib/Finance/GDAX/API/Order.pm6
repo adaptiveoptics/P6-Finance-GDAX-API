@@ -69,7 +69,7 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
 	my %body;
 	for @body-attributes -> $at {
 	    next unless self."$at"().defined;
-	    %body<$at> = self."$at"();
+	    %body<<$at>> = self."$at"();
 	}
 	$.body   = %body;
 	$.method = 'POST';
