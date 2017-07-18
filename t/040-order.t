@@ -13,19 +13,19 @@ use Finance::GDAX::API::Order;
 
 ok my $order = Finance::GDAX::API::Order.new;
 # Attributes
-can-ok($order, 'client-oid');
+can-ok($order, 'client_oid');
 can-ok($order, 'type');
 can-ok($order, 'side');
-can-ok($order, 'product-id');
+can-ok($order, 'product_id');
 can-ok($order, 'stp');
 can-ok($order, 'price');
 can-ok($order, 'size');
-can-ok($order, 'time-in-force');
-can-ok($order, 'cancel-after');
+can-ok($order, 'time_in_force');
+can-ok($order, 'cancel_after');
 can-ok($order, 'post-only');
 can-ok($order, 'funds');
-can-ok($order, 'overdraft-enabled');
-can-ok($order, 'funding-amount');
+can-ok($order, 'overdraft_enabled');
+can-ok($order, 'funding_amount');
 # Methods
 can-ok($order, 'initiate');
 can-ok($order, 'get');
@@ -39,12 +39,12 @@ dies-ok { $order.size  = 0 }, 'bad size dies ok';
 dies-ok { $order.type  = 'BAD' }, 'bad type dies ok';
 dies-ok { $order.side  = 'foolish' }, 'bad side dies ok';
 dies-ok { $order.stp   = 'xx' }, 'bad stp dies ok';
-dies-ok { $order.time-in-force = 'UGH' }, 'bad time_in_force dies ok';
+dies-ok { $order.time_in_force = 'UGH' }, 'bad time_in_force dies ok';
 dies-ok { $order.post-only     = 'String' }, 'bad post_only dies ok';
 
 # Set up limit order
 ok ($order.side = 'buy'), 'buy side set';
-ok ($order.product-id = 'BTC-USD'), 'product_id set';
+ok ($order.product_id = 'BTC-USD'), 'product_id set';
 ok ($order.price = 500.23), 'price set';
 ok ($order.size = 0.5), 'size set';
 
@@ -67,14 +67,14 @@ if $do-online-tests {
      is $list.WHAT, (Array), 'list with multiple status';
 
      $order = Finance::GDAX::API::Order.new;
-     $list = $order.list(:product-id('BTC-USD'));
+     $list = $order.list(:product_id('BTC-USD'));
      ok $helper.check-error($order), 'list of product_id had no error';
      is $list.WHAT, (Array), 'list of product_id';
 
      $order = Finance::GDAX::API::Order.new;
-     $list = $order.list(:status(['active','pending']), :product-id('BTC-USD'));
-     ok $helper.check-error($order), 'list with multiple status with product-id had no error';
-     is $list.WHAT, (Array), 'list with multiple status with product-id';
+     $list = $order.list(:status(['active','pending']), :product_id('BTC-USD'));
+     ok $helper.check-error($order), 'list with multiple status with product_id had no error';
+     is $list.WHAT, (Array), 'list with multiple status with product_id';
 }
 
 done-testing;
