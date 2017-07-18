@@ -13,7 +13,7 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
 			    'size',
 			    'time_in_force',
 			    'cancel_after',
-			    'post-only',
+			    'post_only',
 			    'funds',
 			    'overdraft_enabled',
 			    'funding_amount',
@@ -33,7 +33,7 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
     has PositiveNum      $.size          is rw;
     has OrderTimeInForce $.time_in_force is rw;
     has                  $.cancel_after  is rw;
-    has Bool             $.post-only     is rw;
+    has Bool             $.post_only     is rw;
 
     ## Market orders
     #
@@ -55,9 +55,9 @@ class Finance::GDAX::API::Order does Finance::GDAX::API
 		    fail 'time_in_force must be "GTT" when using cancel_after';
 		}
 	    }
-	    if ($.post-only) {
+	    if ($.post_only) {
 		if ($.time_in_force eq any <IOC FOK>) {
-		    fail 'post-only is invalid with time_in_force IOC or FOK';
+		    fail 'post_only is invalid with time_in_force IOC or FOK';
 		}
 	    }
 	}
@@ -291,13 +291,13 @@ matched.
 
 * Note, match also refers to self trades.
 
-=head2 post-only
+=head2 post_only
 
 [optional] Post only flag
 
 Invalid when time_in_force is IOC or FOK
 
-The post-only flag indicates that the order should only make
+The post_only flag indicates that the order should only make
 liquidity. If any part of the order results in taking liquidity, the
 order will be rejected and no part of it will execute.
 

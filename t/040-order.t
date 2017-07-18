@@ -22,7 +22,7 @@ can-ok($order, 'price');
 can-ok($order, 'size');
 can-ok($order, 'time_in_force');
 can-ok($order, 'cancel_after');
-can-ok($order, 'post-only');
+can-ok($order, 'post_only');
 can-ok($order, 'funds');
 can-ok($order, 'overdraft_enabled');
 can-ok($order, 'funding_amount');
@@ -40,7 +40,7 @@ dies-ok { $order.type  = 'BAD' }, 'bad type dies ok';
 dies-ok { $order.side  = 'foolish' }, 'bad side dies ok';
 dies-ok { $order.stp   = 'xx' }, 'bad stp dies ok';
 dies-ok { $order.time_in_force = 'UGH' }, 'bad time_in_force dies ok';
-dies-ok { $order.post-only     = 'String' }, 'bad post_only dies ok';
+dies-ok { $order.post_only     = 'String' }, 'bad post_only dies ok';
 
 # Set up limit order
 ok ($order.side = 'buy'), 'buy side set';
